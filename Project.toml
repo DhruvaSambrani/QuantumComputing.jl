@@ -1,0 +1,4 @@
+name = "QuantumComputing"
+uuid = "d9b293fb-c9d6-4f28-90fc-3c1ac1ab7f56"
+authors = ["Dhruva Sambrani <44899822+DhruvaSambrani@users.noreply.github.com>"]
+version = "0.1.0"
