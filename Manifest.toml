@@ -1,5 +1,12 @@
 # This file is machine-generated - editing it directly is not advised
 
+[[Libdl]]
+uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
+
+[[LinearAlgebra]]
+deps = ["Libdl"]
+uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+
 [[Reexport]]
 git-tree-sha1 = "5f6c21241f0f655da3952fd60aa18477cf96c220"
 uuid = "189a3867-3050-52da-a836-e630ba90ab69"
