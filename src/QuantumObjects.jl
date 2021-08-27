@@ -1,5 +1,5 @@
 module QuantumObjects
-import Base: *, ∘, kron, adjoint
+import Base: *, ∘, kron, adjoint,+,-
 import LinearAlgebra: Hermitian, tr
 export QuantumObject, Ket, Bra, DensityMatrix, inner
 
@@ -25,10 +25,9 @@ struct DensityMatrix <: QuantumObject
     matrix::Hermitian{ComplexF64, Matrix{ComplexF64}}
 end
 
+
 inner(ρ::DensityMatrix, σ::DensityMatrix) = 1/2 * tr(ρ.matrix * σ.matrix) 
 inner(k1::Ket, k2::Ket) = k1.coefficients' * k2.coefficients
-
-
 Base.:*(ρ::DensityMatrix, σ::DensityMatrix) = inner(ρ, σ) 
 
 Base.kron(k1::Ket, k2::Ket) = Ket(k1.coefficients ⊗ k2.coefficients)
