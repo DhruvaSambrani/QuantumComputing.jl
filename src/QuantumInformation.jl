@@ -4,7 +4,7 @@ export entropy,trace_distance
 
 using ..QuantumObjects
 
-partial_shannon(x) = x ≈ 0 ? 0.0 : x*log(x)
+partial_shannon(x) = x ≈ 0 ? float(x) : x*log(x)
 entropy(prob::Array{Float64})::Float64 = - sum(prob.*(partial_shannon.(prob)))
 entropy(ρ::DensityMatrix):: Float64 = entropy(eigvals(ρ.matrix))
 
