@@ -1,5 +1,5 @@
 module QuantumObjects
-import Base: *, ∘, kron, adjoint,+,-
+import Base: *, ∘, kron, adjoint
 import LinearAlgebra: Hermitian, tr
 export QuantumObject, Ket, Bra, DensityMatrix, inner
 
