@@ -8,5 +8,5 @@ include("./QuantumOperations.jl")
 @reexport using .QuantumOperations
 
 include("./QuantumInformation.jl")
-@reexport using .QuantumInfo
+@reexport using .QuantumInformation
 end # module
