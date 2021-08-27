@@ -1,17 +1,25 @@
 module QuantumObjects
 import Base: *, ∘, kron, adjoint
 import LinearAlgebra: Hermitian, tr
-export QuantumObject, Ket, Bra, DensityMatrix, inner
+export QuantumObject, Ket, Bra, DensityMatrix, inner,normalization
 
 abstract type QuantumObject end
 
+normalization(coefficients::Array{ComplexF64,1})  = sqrt(sum((abs.(coefficients)).^2))
+
 struct Ket <: QuantumObject
     coefficients::AbstractArray{ComplexF64,1}
+    function Ket(coefficients)
+        new(coefficients ./ normalization(coefficients))
+    end  
 end
 
 struct Bra <: QuantumObject
     k::Ket
 end
+
+normalization(k1:: Ket) = normalization(k1.coefficients)
+normalization(k1:: Bra) = normalization(Ket(k1))
 
 Ket(b::Bra) = b.k
 
@@ -23,6 +31,15 @@ Base.:*(b::Bra, k::Ket) = inner(Ket(b), k)
 
 struct DensityMatrix <: QuantumObject
     matrix::Hermitian{ComplexF64, Matrix{ComplexF64}}
+    function DensityMatrix(rho::Matrix{ComplexF64}, to_normalize=true:: Bool)
+        if to_normalize
+            rho = rho ./ tr(rho)
+        end
+        if rho != rho'
+            println("DensityMatrix has to be Hermitian, so Hermitian(Array) is done automatically!")
+        end 
+            new(Hermitian(rho))
+    end
 end
 
 inner(ρ::DensityMatrix, σ::DensityMatrix) = 1/2 * tr(ρ.matrix * σ.matrix) 
