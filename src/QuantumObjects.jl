@@ -1,16 +1,16 @@
 module QuantumObjects
 import Base: *, ∘, kron, adjoint
 import LinearAlgebra: Hermitian, tr
-export QuantumObject, Ket, Bra, DensityMatrix, inner,normalization
+export QuantumObject, Ket, Bra, DensityMatrix, inner,norm
 
 abstract type QuantumObject end
 
-normalization(coefficients::Array{ComplexF64,1})  = sqrt(sum((abs.(coefficients)).^2))
+norm(coefficients::Array{ComplexF64,1})  = sqrt(sum((abs.(coefficients)).^2))
 
 struct Ket <: QuantumObject
     coefficients::AbstractArray{ComplexF64,1}
     function Ket(coefficients)
-        new(coefficients ./ normalization(coefficients))
+        new(coefficients ./ norm(coefficients))
     end  
 end
 
@@ -18,8 +18,8 @@ struct Bra <: QuantumObject
     k::Ket
 end
 
-normalization(k1:: Ket) = normalization(k1.coefficients)
-normalization(k1:: Bra) = normalization(Ket(k1))
+norm(k1:: Ket) = norm(k1.coefficients)
+norm(k1:: Bra) = norm(Ket(k1))
 
 Ket(b::Bra) = b.k
 
@@ -32,12 +32,14 @@ Base.:*(b::Bra, k::Ket) = inner(Ket(b), k)
 struct DensityMatrix <: QuantumObject
     matrix::Hermitian{ComplexF64, Matrix{ComplexF64}}
     function DensityMatrix(rho::Matrix{ComplexF64}, to_normalize=true:: Bool)
-        if to_normalize
+        if rho != adjoint(rho)
+            error("Density Matrix has to be Hermitian!")
+        end
+        if !to_normalize & (real(tr(rho)) > 1.0)
+            error("Density Matrix should have Trace smaller than or equal to  1")
+        elseif to_normalize 
             rho = rho ./ tr(rho)
         end
-        if rho != rho'
-            println("DensityMatrix has to be Hermitian, so Hermitian(Array) is done automatically!")
-        end 
             new(Hermitian(rho))
     end
 end
