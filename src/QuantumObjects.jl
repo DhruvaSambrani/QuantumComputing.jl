@@ -1,11 +1,9 @@
 module QuantumObjects
 import Base: *, ∘, kron, adjoint
-import LinearAlgebra: Hermitian, tr,ishermitian
+import LinearAlgebra: Hermitian, tr,ishermitian,norm
 export QuantumObject, Ket, Bra, DensityMatrix, inner,norm
 
 abstract type QuantumObject end
-
-norm(coefficients::Array{ComplexF64,1})  = sqrt(sum((abs.(coefficients)).^2))
 
 struct Ket <: QuantumObject
     coefficients::AbstractArray{ComplexF64,1}
