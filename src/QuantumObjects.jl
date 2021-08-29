@@ -1,6 +1,6 @@
 module QuantumObjects
 import Base: *, ∘, kron, adjoint
-import LinearAlgebra: Hermitian, tr
+import LinearAlgebra: Hermitian, tr,ishermitian
 export QuantumObject, Ket, Bra, DensityMatrix, inner,norm
 
 abstract type QuantumObject end
@@ -18,8 +18,8 @@ struct Bra <: QuantumObject
     k::Ket
 end
 
-norm(k1:: Ket) = norm(k1.coefficients)
-norm(k1:: Bra) = norm(Ket(k1))
+norm(k1::Ket) = 1.0
+norm(k1::Bra) = 1.0
 
 Ket(b::Bra) = b.k
 
@@ -32,7 +32,8 @@ Base.:*(b::Bra, k::Ket) = inner(Ket(b), k)
 struct DensityMatrix <: QuantumObject
     matrix::Hermitian{ComplexF64, Matrix{ComplexF64}}
     function DensityMatrix(rho::Matrix{ComplexF64}, to_normalize=true:: Bool)
-        if rho != adjoint(rho)
+        #if rho != adjoint(rho) 
+        if !ishermitian(rho)
             error("Density Matrix has to be Hermitian!")
         end
         if !to_normalize & (real(tr(rho)) > 1.0)
@@ -44,9 +45,11 @@ struct DensityMatrix <: QuantumObject
     end
 end
 
-inner(ρ::DensityMatrix, σ::DensityMatrix) = 1/2 * tr(ρ.matrix * σ.matrix) 
+inner(ρ::DensityMatrix, σ::DensityMatrix) = tr(ρ.matrix * σ.matrix)
 inner(k1::Ket, k2::Ket) = k1.coefficients' * k2.coefficients
-Base.:*(ρ::DensityMatrix, σ::DensityMatrix) = inner(ρ, σ) 
+Base.:*(ρ::DensityMatrix, σ::DensityMatrix) = inner(ρ, σ)
+
+norm(ρ::DensityMatrix) = sqrt(real(inner(ρ,ρ)))::Float64
 
 Base.kron(k1::Ket, k2::Ket) = Ket(k1.coefficients ⊗ k2.coefficients)
 Base.kron(b1::Bra, b2::Bra) = Bra(b1.k ⊗ b2.k)
