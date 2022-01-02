@@ -7,4 +7,6 @@ include("./QuantumObjects.jl")
 include("./QuantumOperations.jl")
 @reexport using .QuantumOperations
 
+include("./QuantumInformation.jl")
+@reexport using .QuantumInformation
 end # module
