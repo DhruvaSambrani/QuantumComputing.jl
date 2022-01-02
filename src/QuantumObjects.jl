@@ -1,17 +1,24 @@
 module QuantumObjects
 import Base: *, ∘, kron, adjoint
-import LinearAlgebra: Hermitian, tr
-export QuantumObject, Ket, Bra, DensityMatrix, inner
+import LinearAlgebra: Hermitian, tr, normalize
+export QuantumObject, Ket, Bra, DensityMatrix, inner, dims
 
-abstract type QuantumObject end
+abstract type QuantumObject{N} end
 
-struct Ket <: QuantumObject
+(dims(::QuantumObject{N}) where N) = N
+
+struct Ket{N} <: QuantumObject{N}
     coefficients::AbstractArray{ComplexF64,1}
+    function Ket(a::AbstractArray{T, 1}) where T<:Number
+        new{length(a)}(normalize(a))
+    end
 end
 
-struct Bra <: QuantumObject
-    k::Ket
+struct Bra{N} <: QuantumObject{N}
+    k::Ket{N}
 end
+
+Bra(a::AbstractArray{Number, 1}) = Bra(Ket(conj.(a)))
 
 Ket(b::Bra) = b.k
 
@@ -21,7 +28,7 @@ Base.adjoint(b::Bra) = Ket(b)
 Base.:*(k1::Ket, k2::Ket) = inner(k1, k2)
 Base.:*(b::Bra, k::Ket) = inner(Ket(b), k)
 
-struct DensityMatrix <: QuantumObject
+struct DensityMatrix{N} <: QuantumObject{N}
     matrix::Hermitian{ComplexF64, Matrix{ComplexF64}}
 end
 
